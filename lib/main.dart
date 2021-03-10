@@ -19,6 +19,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'AAKIB',
       theme: ThemeData(
+        splashColor: Colors.red,
         primarySwatch: Colors.green,
       ),
       home: MainPage(),
