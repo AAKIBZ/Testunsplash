@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       title: 'AAKIB',
       theme: ThemeData(
         // splashColor: Colors.blue,
-        primarySwatch: Colors.green,
+        // primarySwatch: Colors.green,
       ),
       home: MainPage(),
     );
