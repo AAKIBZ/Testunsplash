@@ -6,6 +6,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:unsplash_demo_nova/models/MianModel.dart';
 import 'package:unsplash_demo_nova/services/unsplashImageProvider.dart';
 import 'CustomViewForOrientattionBuilder.dart';
+import 'listclass.dart';
 import 'utils/ProgressIndicator.dart';
 
 void main() {
@@ -38,12 +39,21 @@ class _MainPageState extends State<MainPage> {
   int page = 0, totalPages = -1;
   List<UnsplashImageModel> images = [];
   bool loadingImages = false;
+  // SharedPreferences preferences;
 
   @override
   initState() {
     super.initState();
     _loadImages();
   }
+/// this saves the images in the local cache as the images have large size so i have commented the code
+  // initializePrefs(List<String> images) async{
+  //   preferences = await SharedPreferences.getInstance();
+  //   for(int i=0;i<=2;i++){
+  //     preferences.setStringList("imageList", images);
+  //     print('hemlata'+images.toString());
+  //   }
+  // }
 
   /// Requests a list of Images.
   _loadImages() async {
@@ -66,6 +76,16 @@ class _MainPageState extends State<MainPage> {
       loadingImages = false;
       this.images.addAll(images);
     });
+///used for local cache
+    // List<String> imgs=List();
+    //  while(imgs.length<=3){
+    //
+    //  }
+    // for(int i=0;i<images.length;i++){
+    //   imgs.add(this.images[i].getSmallUrl());
+    //   print('AAKI'+images[i].getSmallUrl());
+    // }
+    // initializePrefs(imgs);
   }
 
   @override
@@ -87,7 +107,8 @@ class _MainPageState extends State<MainPage> {
                       _buildImageGrid(orientation: orientation),
                       loadingImages
                           ? SliverToBoxAdapter(
-                              child: ProgressIndicatorData(Colors.grey[400]))
+                              child: ProgressIndicatorData(Colors.grey[400])
+                      )
                           : _buildImageGrid(orientation: orientation),
                     ].where((w) => w != null).toList(),
                   ),

@@ -22,13 +22,16 @@ class UnsplashImageProvider {
     HttpClientRequest request = await httpClient.getUrl(Uri.parse(url));
     request.headers
         .add('Authorization', 'Client-ID ${Keys.UNSPLASH_API_CLIENT_ID}');
+    print(request.headers.toString()+'AAKI');
     HttpClientResponse response = await request.close();
+
 
     /// Handle the api data according to the response that has been received for the server
     switch (response.statusCode) {
       case 200:
       ///OK
         String json = await response.transform(utf8.decoder).join();
+        print(json.toString()+ 'aakib');
         return jsonDecode(json);
         break;
       case 400:
