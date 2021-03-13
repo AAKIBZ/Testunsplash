@@ -22,7 +22,7 @@ class CustomViewForOrientationBuilder extends StatelessWidget {
             : Colors.grey[300],
       );
 
-  /// Returns a error placeholder to show until an image is loaded.
+  /// Returns a git placeholder to show until an image is loaded.
   Widget _buildImageErrorWidget() => Container(
       color: Colors.grey[200],
       child: Center(child: Icon(Icons.broken_image, color: Colors.grey[400])));
