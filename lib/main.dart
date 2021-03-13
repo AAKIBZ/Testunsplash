@@ -1,12 +1,13 @@
-import 'dart:io';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:async';
+
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:unsplash_demo_nova/models/MianModel.dart';
+import 'package:unsplash_demo_nova/models/model.dart';
 import 'package:unsplash_demo_nova/services/unsplashImageProvider.dart';
+
 import 'CustomViewForOrientattionBuilder.dart';
-import 'listclass.dart';
+import 'checkinternet.dart';
 import 'utils/ProgressIndicator.dart';
 
 void main() {
@@ -20,8 +21,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'AAKIB',
       theme: ThemeData(
-        // splashColor: Colors.blue,
-        // primarySwatch: Colors.green,
+        primarySwatch: Colors.green,
       ),
       home: MainPage(),
     );
@@ -34,58 +34,88 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+
+  ///dynamically detect the state of the internet
+  String _connectionStatus = 'Unknown';
+  final Connectivity _connectivity = Connectivity();
+  StreamSubscription<ConnectivityResult> _connectivitySubscription;
+
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
   int page = 0, totalPages = -1;
-  List<UnsplashImageModel> images = [];
+  List<UnsplashModel> images1 = [];
   bool loadingImages = false;
+
   // SharedPreferences preferences;
+  bool isInternet = true;
+  List<String> imgs = [];
 
   @override
   initState() {
     super.initState();
     _loadImages();
+    // _getValue();
   }
-/// this saves the images in the local cache as the images have large size so i have commented the code
-  // initializePrefs(List<String> images) async{
-  //   preferences = await SharedPreferences.getInstance();
-  //   for(int i=0;i<=2;i++){
-  //     preferences.setStringList("imageList", images);
-  //     print('hemlata'+images.toString());
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
+  }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    setState(() {
+      onRefresh();
+    });
+  }
+  /// Platform messages are asynchronous, so we initialize in an async method.
+  // Future<void> initConnectivity() async {
+  //   ConnectivityResult result = ConnectivityResult.none;
+  //   // Platform messages may fail, so we use a try/catch PlatformException.
+  //   try {
+  //     result = await _connectivity.checkConnectivity();
+  //   } on PlatformException catch (e) {
+  //     print(e.toString());
+  //   }
+  //   if (!mounted) {
+  //     return Future.value(null);
+  //   }
+  //   return _updateConnectionStatus(result);
+  // }
+  // Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+  //   switch (result) {
+  //     case ConnectivityResult.wifi:
+  //       ToastClass.showToast("Connected To wifi ");
+  //       break;
+  //     case ConnectivityResult.mobile:
+  //       ToastClass.showToast("Connected To Mobile Data");
+  //       break;
+  //     case ConnectivityResult.none:
+  //       ToastClass.showToast("oops! we detected no internet");
+  //       setState(() => _connectionStatus = result.toString());
+  //       break;
+  //     default:
+  //       setState(() => _connectionStatus = 'Failed to get connectivity.');
+  //       break;
   //   }
   // }
 
   /// Requests a list of Images.
   _loadImages() async {
-    if (loadingImages) {
-      return;
-    }
-    if (totalPages != -1 && page >= totalPages) {
-      return;
-    }
-    await Future.delayed(Duration(microseconds: 1));
     setState(() {
-      checkInternetConnection(context);
-      loadingImages = true;
+      CheckInternet().checkInternetConnection(context);
     });
+     images1 = await UnsplashImageProvider.getImagesFromUnsplash(context);
 
-    List<UnsplashImageModel> images;
-    images = await UnsplashImageProvider.loadImages(page: ++page);
     // update the state
-    setState(() {
-      loadingImages = false;
-      this.images.addAll(images);
-    });
-///used for local cache
-    // List<String> imgs=List();
-    //  while(imgs.length<=3){
-    //
-    //  }
-    // for(int i=0;i<images.length;i++){
-    //   imgs.add(this.images[i].getSmallUrl());
-    //   print('AAKI'+images[i].getSmallUrl());
-    // }
-    // initializePrefs(imgs);
+    if (images1.isNotEmpty) {
+      loadingImages = true;
+      setState(() {
+      });
+    } else {
+      print('aakib there is null value in the list ');
+    }
   }
 
   @override
@@ -107,8 +137,9 @@ class _MainPageState extends State<MainPage> {
                       _buildImageGrid(orientation: orientation),
                       loadingImages
                           ? SliverToBoxAdapter(
-                              child: ProgressIndicatorData(Colors.grey[400])
-                      )
+                              child: Center(
+                                  child:
+                                      ProgressIndicatorData(Colors.grey[400])))
                           : _buildImageGrid(orientation: orientation),
                     ].where((w) => w != null).toList(),
                   ),
@@ -130,12 +161,13 @@ class _MainPageState extends State<MainPage> {
       sliver: SliverStaggeredGrid.countBuilder(
         // set column count
         crossAxisCount: columnCount,
-        itemCount: images.length,
+        itemCount: images1.length,
         // set itemBuilder
         itemBuilder: (BuildContext context, int index) =>
+           images1.isEmpty?CircularProgressIndicator():
             _buildImageItemBuilder(index),
         staggeredTileBuilder: (int index) =>
-            _buildStaggeredTile(images[index], columnCount),
+            _buildStaggeredTile(images1[index], columnCount),
         mainAxisSpacing: 16.0,
         crossAxisSpacing: 16.0,
       ),
@@ -151,19 +183,18 @@ class _MainPageState extends State<MainPage> {
       );
 
   /// Asynchronously loads a Image for a given index.
-  Future<UnsplashImageModel> _loadImage(int index) async {
+  Future<UnsplashModel> _loadImage(int index) async {
     // check if new images need to be loaded
-    if (index >= images.length - 2) {
+    if (index >= images1.length - 2) {
       // Reached the end of the list. Try to load more images.
       _loadImages();
     }
-    return index < images.length ? images[index] : null;
+    return index < images1.length ? images1[index] : null;
   }
 
   /// Returns a StaggeredTile for a given image.
-  StaggeredTile _buildStaggeredTile(UnsplashImageModel image, int columnCount) {
-    double aspectRatio =
-        image.getHeight().toDouble() / image.getWidth().toDouble();
+  StaggeredTile _buildStaggeredTile(UnsplashModel image, int columnCount) {
+    double aspectRatio = image.height.toDouble() / image.width.toDouble();
     double columnWidth = MediaQuery.of(context).size.width / columnCount;
     // not using [StaggeredTile.fit(1)] because during loading StaggeredGrid is really jumpy.
     return StaggeredTile.extent(1, aspectRatio * columnWidth);
@@ -171,33 +202,25 @@ class _MainPageState extends State<MainPage> {
 
   /// used for swipe refresh layout to load latest images from the api..
   Future onRefresh() async {
-    setState(() {
-      images.clear();
-    });
-    Future.delayed(Duration(
-      seconds: 2,
-    ));
+    // setState(() {
+    //   // images1.clear();
+    // });
+    images1.clear();
     _loadImages();
   }
-}
 
-/// checks whether there is internet or not
-void checkInternetConnection(BuildContext context) async {
-  try {
-    final result = await InternetAddress.lookup('google.com');
-    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-      print('connected');
-      final snackBar =
-          SnackBar(content: Text('internet Connected we are good to go...'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    } else {
-      final snackBar =
-          SnackBar(content: Text('internet chuy band yali traw jaldii'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
-  } on SocketException catch (_) {
-    final snackBar = SnackBar(content: Text('No Internet Connection'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    print('not connected');
-  }
+  ///used for local cache
+// setImageInCache() async {
+//   preferences = await SharedPreferences.getInstance();
+//   print("Image URLS    " + images.length.toString());
+//   for (int i = 0; i < images.length; i++) {
+//     imgs.add(images[i].getSmallUrl());
+//     print('CACHE RESULTS' + images[i].getSmallUrl());
+//   }
+//   preferences.setStringList("imageList", imgs);
+//   print('CACHE RESULTS AFTER SAVE' + imgs.toString());
+// }
+
+
+
 }

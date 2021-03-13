@@ -1,12 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:unsplash_demo_nova/info_sheet.dart';
-import 'package:unsplash_demo_nova/models/MianModel.dart';
+import 'package:unsplash_demo_nova/models/model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// ImageTile displayed in StaggeredGridView.
 class CustomViewForOrientationBuilder extends StatelessWidget {
-  final UnsplashImageModel image;
+  final UnsplashModel image;
 
   const CustomViewForOrientationBuilder(this.image);
      /// adds some style
@@ -15,9 +15,9 @@ class CustomViewForOrientationBuilder extends StatelessWidget {
       ClipRRect(borderRadius: BorderRadius.circular(12), child: widget);
 
   /// Returns a placeholder to show until an image is loaded.
-  Widget _buildImagePlaceholder({UnsplashImageModel image}) => Container(
+  Widget _buildImagePlaceholder({UnsplashModel image}) => Container(
         color: image != null
-            ? Color(int.parse(image.getColor().substring(1, 7), radix: 16) +
+            ? Color(int.parse(image.color.substring(1, 7), radix: 16) +
                 0x64000000)
             : Colors.grey[300],
       );
@@ -38,16 +38,16 @@ class CustomViewForOrientationBuilder extends StatelessWidget {
           );
         },
         onTap: () {
-          launch(image?.getHtmlLink());
+          launch(image?.links?.html);
         },
         child: image != null
             ? Hero(
-                tag: '${image.getId()}',
+                tag: '${image.id}',
                 child: _addRoundedCorners(
                   CachedNetworkImage(
-                    imageUrl: image?.getSmallUrl(),
+                    imageUrl: image?.urls?.thumb,
                     placeholder: (context, url) =>
-                        _buildImagePlaceholder(image: image),
+                        _buildImagePlaceholder(),
                     errorWidget: (context, url, obj) =>
                         _buildImageErrorWidget(),
                     fit: BoxFit.cover,

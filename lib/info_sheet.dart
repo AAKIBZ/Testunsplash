@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'models/model.dart';
 import 'utils/ProgressIndicator.dart';
-import 'models/MianModel.dart';
-import 'models/location.dart';
 
 /// class for longpress of image to show details of image
 class LongPressImageDetails extends StatelessWidget {
-  final UnsplashImageModel image;
+  final UnsplashModel image;
 
   LongPressImageDetails(this.image);
 
@@ -25,14 +24,13 @@ class LongPressImageDetails extends StatelessWidget {
             children: image != null
                 ? <Widget>[
                     InkWell(
-                      onTap: () => launch(image?.getUser()?.getHtmlLink()),
+                      // onTap: () => launch(image?.user?.getHtmlLink()),
                       child: Column(children: [
                         Row(
                           children: <Widget>[
-                            _buildUserProfileImage(
-                                image?.getUser()?.getMediumProfileImage()),
+                            _buildUserProfileImage(image?.urls.small),
                             Text(
-                              '${image.getUser().getFirstName()} ${image?.getUser()?.getLastName()}',
+                              '${image.user.firstName} ${image?.user.lastName}',
                               style: TextStyle(
                                   color: Colors.black87,
                                   fontSize: 18.0,
@@ -42,7 +40,7 @@ class LongPressImageDetails extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(right: 16.0),
                               child: Text(
-                                '${image.createdAtFormatted()}'.toUpperCase(),
+                                '${image.createdAt}'.toUpperCase(),
                                 style: TextStyle(
                                     color: Colors.black26,
                                     fontSize: 12.0,
@@ -54,8 +52,7 @@ class LongPressImageDetails extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(right: 16.0),
                           child: Text(
-                            'the desc is : ${image.getDescription()}'
-                                .toUpperCase(),
+                            'the desc is : ${image.description}'.toUpperCase(),
                             style: TextStyle(
                                 color: Colors.black26,
                                 fontSize: 12.0,
@@ -68,7 +65,7 @@ class LongPressImageDetails extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(right: 16.0),
                           child: Text(
-                            'Likes : ${image.getLikes()}'.toUpperCase(),
+                            'Likes : ${image.likes}'.toUpperCase(),
                             style: TextStyle(
                                 color: Colors.black26,
                                 fontSize: 12.0,
@@ -78,11 +75,11 @@ class LongPressImageDetails extends StatelessWidget {
                       ]),
                     ),
                     // show description
-                    _buildDescriptionWidget(image.getDescription()),
+                    _buildDescriptionWidget(image.description),
                     // show location
-                    _buildLocationWidget(image.getLocation()),
+                    // _buildLocationWidget(image.),
                     // show exif data
-                    _buildExifWidget(image.getExif()),
+                    // _buildExifWidget(image.ex),
                     // filter null views
                   ].where((w) => w != null).toList()
                 : <Widget>[ProgressIndicatorData(Colors.black26)]),
@@ -118,7 +115,7 @@ class LongPressImageDetails extends StatelessWidget {
       : null;
 
   /// Builds a widget displaying the [location], where the image was captured.
-  Widget _buildLocationWidget(Location location) => location != null
+  Widget _buildLocationWidget(UnsplashModel location) => location != null
       ? Padding(
           padding: const EdgeInsets.only(left: 16.0, bottom: 16.0, right: 16.0),
           child: Row(
@@ -132,7 +129,7 @@ class LongPressImageDetails extends StatelessWidget {
               Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
-                    '${location.getCity()}, ${location.getCountry()}'
+                    '${location.description}, ${location.createdAt}'
                         .toUpperCase(),
                     style: TextStyle(
                       color: Colors.black54,
@@ -146,7 +143,7 @@ class LongPressImageDetails extends StatelessWidget {
       : null;
 
   /// Builds a widget displaying all [exif] data
-  Widget _buildExifWidget(Exif exif) => exif != null
+  Widget _buildExifWidget(UnsplashModel exif) => exif != null
       ? Padding(
           padding: const EdgeInsets.only(left: 16.0, bottom: 16.0, right: 16.0),
           child: Row(
@@ -164,7 +161,7 @@ class LongPressImageDetails extends StatelessWidget {
                       padding: EdgeInsets.only(
                           left: 8.0, right: 8.0, top: 4.0, bottom: 4.0),
                       child: Text(
-                        '${exif.getModel()}',
+                        '${exif.promotedAt.toString()}',
                         style: TextStyle(
                             color: Colors.black54,
                             fontSize: 14.0,
@@ -173,10 +170,10 @@ class LongPressImageDetails extends StatelessWidget {
                   Row(
                     children: <Widget>[
                       // display exif info
-                      _buildExifInfoItem('ƒ${exif.getAperture()}'),
-                      _buildExifInfoItem('${exif.getExposureTime()}'),
-                      _buildExifInfoItem('${exif.getFocalLength()}mm'),
-                      _buildExifInfoItem('ISO${exif.getIso()}'),
+                      _buildExifInfoItem('ƒ${exif.width}'),
+                      _buildExifInfoItem('${exif.promotedAt}'),
+                      _buildExifInfoItem('${exif.links}mm'),
+                      _buildExifInfoItem('ISO${exif.description}'),
                     ],
                   ),
                 ],

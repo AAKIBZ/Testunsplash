@@ -36,8 +36,13 @@ dependencies:
   date_format: ^1.0.9
   # other utility
   parallax_image: 0.3.1+1
-#  flutter_cache_manager: ^0.3.2
-  shared_preferences: ^2.0.3
+##  flutter_cache_manager: ^0.3.2
+#  shared_preferences: ^2.0.3
+  sqflite: ^1.2.0
+  path_provider: ^1.5.1
+  http: ^0.13.0
+  connectivity: ^3.0.2
+  fluttertoast: ^7.1.6
 
 
   # The following adds the Cupertino Icons font to your application.
