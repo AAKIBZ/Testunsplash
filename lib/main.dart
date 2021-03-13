@@ -41,7 +41,7 @@ class _MainPageState extends State<MainPage> {
   StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-      GlobalKey<RefreshIndicatorState>();
+  GlobalKey<RefreshIndicatorState>();
   int page = 0, totalPages = -1;
   List<UnsplashModel> images1 = [];
   bool loadingImages = false;
@@ -106,7 +106,7 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       CheckInternet().checkInternetConnection(context);
     });
-     images1 = await UnsplashImageProvider.getImagesFromUnsplash(context);
+    images1 = await UnsplashImageProvider.getImagesFromUnsplash(context);
 
     // update the state
     if (images1.isNotEmpty) {
@@ -137,9 +137,9 @@ class _MainPageState extends State<MainPage> {
                       _buildImageGrid(orientation: orientation),
                       loadingImages
                           ? SliverToBoxAdapter(
-                              child: Center(
-                                  child:
-                                      ProgressIndicatorData(Colors.grey[400])))
+                          child: Center(
+                              child:
+                              ProgressIndicatorData(Colors.grey[400])))
                           : _buildImageGrid(orientation: orientation),
                     ].where((w) => w != null).toList(),
                   ),
@@ -147,8 +147,8 @@ class _MainPageState extends State<MainPage> {
                 onRefresh: onRefresh),
           ],
         )
-        // ),
-        );
+      // ),
+    );
   }
 
   /// Returns the grid that displays images actually according to requirement we have to display only orientation is used if we use landscape mode.
@@ -164,8 +164,8 @@ class _MainPageState extends State<MainPage> {
         itemCount: images1.length,
         // set itemBuilder
         itemBuilder: (BuildContext context, int index) =>
-           images1.isEmpty?CircularProgressIndicator():
-            _buildImageItemBuilder(index),
+        images1.isEmpty?CircularProgressIndicator():
+        _buildImageItemBuilder(index),
         staggeredTileBuilder: (int index) =>
             _buildStaggeredTile(images1[index], columnCount),
         mainAxisSpacing: 16.0,
@@ -176,11 +176,11 @@ class _MainPageState extends State<MainPage> {
 
   /// Returns a FutureBuilder to load a Image for a given [index].
   Widget _buildImageItemBuilder(int index) => FutureBuilder(
-        // pass image loader
-        future: _loadImage(index),
-        builder: (context, snapshot) =>
-            CustomViewForOrientationBuilder(snapshot.data),
-      );
+    // pass image loader
+    future: _loadImage(index),
+    builder: (context, snapshot) =>
+        CustomViewForOrientationBuilder(snapshot.data),
+  );
 
   /// Asynchronously loads a Image for a given index.
   Future<UnsplashModel> _loadImage(int index) async {
@@ -209,7 +209,7 @@ class _MainPageState extends State<MainPage> {
     _loadImages();
   }
 
-  ///used for local cache
+///used for local cache
 // setImageInCache() async {
 //   preferences = await SharedPreferences.getInstance();
 //   print("Image URLS    " + images.length.toString());

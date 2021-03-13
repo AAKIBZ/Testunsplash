@@ -10,17 +10,17 @@ import 'keys.dart';
 
 /// api class for the awesome app photos
 class UnsplashImageProvider {
-    int interner = 1;
+  int interner = 1;
   final String BASE_URL = "https://api.unsplash.com/photos?page=1&per_page=30";
- static List<UnsplashModel> res = <UnsplashModel>[];
+  static List<UnsplashModel> res = <UnsplashModel>[];
   static Future<List> getImagesFromUnsplash(BuildContext context) async {
 
     ///here is the main logic we save the users data in a local cache this file can latter be updated and the new data replaces the old data
     String filename = "userimages.json";
     var dir = await getTemporaryDirectory();
     File file = new File(dir.path + "/" + filename);
-   dynamic check= await CheckInternet().checkInternetConnection(context);
-   print('CHCEK'+check.toString());
+    dynamic check= await CheckInternet().checkInternetConnection(context);
+    print('CHCEK'+check.toString());
 
     if (file.existsSync() && check == false) {
       print("loading from cache");
@@ -38,7 +38,7 @@ class UnsplashImageProvider {
 
       switch (response.statusCode) {
         case 200:
-          ///OK
+        ///OK
           String jsonresponse = response.body;
           if(file.existsSync()){
             file.deleteSync(recursive: true);
@@ -54,26 +54,26 @@ class UnsplashImageProvider {
           break;
         case 400:
 
-          /// display the error message according to the error
-          ///bad request
+        /// display the error message according to the error
+        ///bad request
           print("bad request error: ${response.statusCode}");
           return [];
           break;
         case 403:
 
-          ///Forbidden
+        ///Forbidden
           print("forbidden  error: ${response.statusCode}");
           return [];
           break;
         case 404:
 
-          /// Not Found
+        /// Not Found
           print("not found error: ${response.statusCode}");
           return [];
           break;
         default:
 
-          /// Something unexpected has occurred
+        /// Something unexpected has occurred
           print("unexpected error: ${response.statusCode}");
           return [];
           break;
@@ -81,23 +81,23 @@ class UnsplashImageProvider {
     }
   }
 
- //    static Future<List> SWAPDATA(List<UnsplashModel> Data ) async{
- //       switch(ToastClass.INTERNET){
- //         case 1:
- //           print('Using Internet'+ToastClass.INTERNET.toString());
- //           return await Data;
- //           break;
- //         case 2:
- //           print('Using local cache'+ToastClass.INTERNET.toString());
- //           return await Data;
- //
- //           break;
- //         default:
- //           ToastClass.showToast("Something Unexpected Has Occurred");
- //           break;
- //       }
- //
- // }
+//    static Future<List> SWAPDATA(List<UnsplashModel> Data ) async{
+//       switch(ToastClass.INTERNET){
+//         case 1:
+//           print('Using Internet'+ToastClass.INTERNET.toString());
+//           return await Data;
+//           break;
+//         case 2:
+//           print('Using local cache'+ToastClass.INTERNET.toString());
+//           return await Data;
+//
+//           break;
+//         default:
+//           ToastClass.showToast("Something Unexpected Has Occurred");
+//           break;
+//       }
+//
+// }
 
 
 }

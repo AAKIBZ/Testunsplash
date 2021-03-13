@@ -311,19 +311,21 @@ class Urls {
   String small;
   String thumb;
 
-  factory Urls.fromJson(Map<String, dynamic> json) => Urls(
-    raw: json["raw"],
-    full: json["full"],
-    regular: json["regular"],
-    small: json["small"],
-    thumb: json["thumb"],
-  );
+  factory Urls.fromJson(Map<String, dynamic> json) =>
+      Urls(
+        raw: json["raw"],
+        full: json["full"],
+        regular: json["regular"],
+        small: json["small"],
+        thumb: json["thumb"],
+      );
 
-  Map<String, dynamic> toJson() => {
-    "raw": raw,
-    "full": full,
-    "regular": regular,
-    "small": small,
-    "thumb": thumb,
-  };
+  Map<String, dynamic> toJson() =>
+      {
+        "raw": raw,
+        "full": full,
+        "regular": regular,
+        "small": small,
+        "thumb": thumb,
+      };
 }
